@@ -6,8 +6,12 @@ import Link from "next/link";
 import { authenticate } from "@/app/lib/actions";
 
 export default function LoginForm() {
-  const [state, dispatch] = useFormState(authenticate, undefined);
-
+  const initialState = {
+    message: null,
+    errors: {},
+  };
+  const [state, dispatch] = useFormState(authenticate, initialState);
+  console.log(state);
   return (
     <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -30,6 +34,14 @@ export default function LoginForm() {
                 required
               />
             </div>
+            <div id="user-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.email &&
+                state.errors.email.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
           </div>
           <div className="mt-4">
             <label
@@ -48,6 +60,17 @@ export default function LoginForm() {
                 required
                 minLength={6}
               />
+              <div id="user-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.password &&
+                  state.errors.password.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+            <div className="mt-4 text-right text-blue-600">
+              <Link href={"/register"}>Create Account</Link>
             </div>
           </div>
         </div>

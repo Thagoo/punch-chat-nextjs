@@ -20,31 +20,35 @@ const userSchema = z.object({
   isAdmin: z.boolean(),
 });
 
+const loginUserSchema = z.object({
+  email: userSchema.shape.email,
+  password: userSchema.shape.password,
+});
+
 export type State = {
   errors?: {
     name?: string[];
     email?: string[];
     avatar?: string[];
     password?: string[];
-    isAdmin?: string[];
+    isAdmin?: boolean[];
   };
   message?: string | null;
 };
 
 export async function addUser(prevState: State, formData: FormData) {
-  // console.log(formData.getAll());
   try {
     const validateUserFields = userSchema.safeParse({
       name: formData.get("name"),
       email: formData.get("email"),
       avatar: formData.get("avatar"),
       password: formData.get("password"),
-      isAdmin: false,
+      isAdmin: formData.get("isAdmin") || false,
     });
     if (!validateUserFields.success) {
       return {
         errors: validateUserFields.error.flatten().fieldErrors,
-        message: "Missing Fields. Failed to Create Invoice.",
+        message: "Missing Fields. Failed to Create User",
       };
     }
 
@@ -55,7 +59,7 @@ export async function addUser(prevState: State, formData: FormData) {
     });
     if (duplicateEmail) {
       return {
-        errors: "Email already exists try different Email",
+        errors: { email: ["Email already exists"] },
       };
     }
     const salt = bcrypt.genSaltSync(10);
@@ -64,27 +68,50 @@ export async function addUser(prevState: State, formData: FormData) {
     const user = new User(validateUserFields.data);
     await user.save();
     console.log("user save", user);
+    return prevState;
   } catch (error) {
-    if ((error as Error).message.includes("CredentialsSignin")) {
-      console.log(error);
-      return {
-        errors: "Something went wrong!",
-      };
-    }
-    throw error;
+    console.log(error);
+    return {
+      message: "Something went wrong!",
+    };
   }
 }
 
-export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData
-) {
+export async function authenticate(prevState: State, formData: FormData) {
+  const validateUserFields = loginUserSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+  if (!validateUserFields.success) {
+    return {
+      errors: validateUserFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to login",
+    };
+  }
   try {
-    await signIn("credentials", Object.fromEntries(formData));
-  } catch (error) {
-    if ((error as Error).message.includes("CredentialsSignin")) {
-      return "CredentialsSignin";
+    connectToDB();
+    const user = await User.findOne({ email: validateUserFields.data.email });
+    console.log(user);
+    if (!user) {
+      return {
+        errors: { email: ["Email doesn't exist"] },
+      };
     }
+    const isPasswordCorrect = await bcrypt.compare(
+      validateUserFields.data.password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return {
+        errors: { password: ["Password doesn't match"] },
+      };
+    }
+
+    await signIn("credentials", Object.fromEntries(formData));
+
+    return prevState;
+  } catch (error) {
     throw error;
   }
 }

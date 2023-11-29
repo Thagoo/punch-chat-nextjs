@@ -13,12 +13,18 @@ const login = async (credentials: { email: string; password: string }) => {
     connectToDB();
     const user = await User.findOne({ email: email });
 
-    if (!user) throw new Error("Wrong credentials!");
-
+    if (!user) {
+      return {
+        errors: { email: "Email doesn't exist" },
+      };
+    }
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    console.log(user, isPasswordCorrect);
 
-    if (!isPasswordCorrect) throw new Error("Wrong credentials!");
+    if (!isPasswordCorrect) {
+      return {
+        errors: { password: "Password doesn't match" },
+      };
+    }
 
     return user;
   } catch (err) {
@@ -38,8 +44,6 @@ export const { signIn, signOut, auth } = NextAuth({
         try {
           if (parsedCredentials.success) {
             const user = await login(parsedCredentials.data);
-            console.log(user);
-            return user;
           }
         } catch (err) {
           return null;
@@ -47,21 +51,4 @@ export const { signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  //   // ADD ADDITIONAL INFORMATION TO SESSION
-  //   callbacks: {
-  //     async jwt({ token, user }) {
-  //       if (user) {
-  //         token.username = user.username;
-  //         token.img = user.img;
-  //       }
-  //       return token;
-  //     },
-  //     async session({ session, token }) {
-  //       if (token) {
-  //         session.user.username = token.username;
-  //         session.user.img = token.img;
-  //       }
-  //       return session;
-  //     },
-  //   },
 });

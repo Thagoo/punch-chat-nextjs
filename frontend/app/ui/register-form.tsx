@@ -84,6 +84,14 @@ export default function RegisterForm() {
                 required
               />
             </div>
+            <div id="user-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.email &&
+                state.errors.email.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
           </div>
           <div className="mt-4">
             <label
@@ -100,9 +108,19 @@ export default function RegisterForm() {
                 name="password"
                 placeholder="Enter password"
                 required
-                minLength={6}
               />
             </div>
+            <div id="user-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.password &&
+                state.errors.password.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
+          <div className="mt-4 text-right text-blue-600 ">
+            <Link href={"/login"}>Click here to Login</Link>
           </div>
         </div>
         <LoginButton />
