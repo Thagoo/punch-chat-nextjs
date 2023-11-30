@@ -11,7 +11,7 @@ export default function LoginForm() {
     errors: {},
   };
   const [state, dispatch] = useFormState(authenticate, initialState);
-  console.log(state);
+
   return (
     <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">

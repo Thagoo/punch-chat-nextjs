@@ -52,11 +52,12 @@ export async function addUser(prevState: State, formData: FormData) {
       };
     }
 
-    connectToDB();
+    await connectToDB();
 
     const duplicateEmail = await User.findOne({
       email: validateUserFields.data.email,
     });
+    console.log(duplicateEmail);
     if (duplicateEmail) {
       return {
         errors: { email: ["Email already exists"] },
@@ -68,6 +69,10 @@ export async function addUser(prevState: State, formData: FormData) {
     const user = new User(validateUserFields.data);
     await user.save();
     console.log("user save", user);
+
+    formData.append("email", validateUserFields.data.email);
+    formData.append("password", validateUserFields.data.password);
+    authenticate(prevState, formData);
     return prevState;
   } catch (error) {
     console.log(error);
@@ -89,9 +94,8 @@ export async function authenticate(prevState: State, formData: FormData) {
     };
   }
   try {
-    connectToDB();
+    await connectToDB();
     const user = await User.findOne({ email: validateUserFields.data.email });
-    console.log(user);
     if (!user) {
       return {
         errors: { email: ["Email doesn't exist"] },
@@ -108,7 +112,7 @@ export async function authenticate(prevState: State, formData: FormData) {
       };
     }
 
-    await signIn("credentials", Object.fromEntries(formData));
+    await signIn("credentials", validateUserFields.data);
 
     return prevState;
   } catch (error) {

@@ -6,25 +6,10 @@ import { User } from "@/app/lib/models";
 import z from "zod";
 import bcrypt from "bcrypt";
 
-const login = async (credentials: { email: string; password: string }) => {
-  const { email, password } = credentials;
-
+const login = async (email: string | unknown, password: string | unknown) => {
   try {
-    connectToDB();
+    await connectToDB();
     const user = await User.findOne({ email: email });
-
-    if (!user) {
-      return {
-        errors: { email: "Email doesn't exist" },
-      };
-    }
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordCorrect) {
-      return {
-        errors: { password: "Password doesn't match" },
-      };
-    }
 
     return user;
   } catch (err) {
@@ -38,13 +23,11 @@ export const { signIn, signOut, auth } = NextAuth({
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
+        const { email, password }: typeof credentials = credentials;
         try {
-          if (parsedCredentials.success) {
-            const user = await login(parsedCredentials.data);
-          }
+          const user = await login(email, password);
+
+          return user;
         } catch (err) {
           return null;
         }
