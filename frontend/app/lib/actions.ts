@@ -1,6 +1,6 @@
 "use server";
 import { signIn } from "@/auth";
-import { connectToDB } from "./db";
+import { connectToDB } from "./utils";
 import { User } from "./models";
 import { z } from "zod";
 import bcrypt from "bcrypt";

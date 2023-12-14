@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
-import { connectToDB } from "./app/lib/db";
+import { connectToDB } from "./app/lib/utils";
 import { User } from "@/app/lib/models";
 import z from "zod";
 import bcrypt from "bcrypt";
@@ -34,4 +34,22 @@ export const { signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.username = user.email;
+        token.image = user.image;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        if (session.user) {
+          session.user.email = token.email;
+          // session.user.image = token.image;
+        }
+      }
+      return session;
+    },
+  },
 });

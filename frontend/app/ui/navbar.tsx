@@ -1,6 +1,10 @@
+import { signOut, auth } from "@/auth";
 import Link from "next/link";
+import { useEffect } from "react";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const { user } = (await auth()) || false;
+
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -84,22 +88,37 @@ export default function Navbar() {
                 Contact
               </a>
             </li>
-            <li>
-              <Link
-                href="/login"
-                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+            {user ? (
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut();
+                }}
               >
-                Login
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/register"
-                className="block md:py-1 md:px-3 mdtext-black-600 rounded bg-blue-950 hover:bg-blue-900 md:hover:hover:bg-blue-900 md:border-0 md:hover:text-white md:p-0 dark:text-white md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-              >
-                Register
-              </Link>
-            </li>
+                <button className="flex  grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+                  <div className="hidden md:block">Sign Out</div>
+                </button>
+              </form>
+            ) : (
+              <>
+                <li>
+                  <Link
+                    href="/login"
+                    className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/register"
+                    className="block md:py-1 md:px-3 mdtext-black-600 rounded bg-blue-950 hover:bg-blue-900 md:hover:hover:bg-blue-900 md:border-0 md:hover:text-white md:p-0 dark:text-white md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >
+                    Register
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

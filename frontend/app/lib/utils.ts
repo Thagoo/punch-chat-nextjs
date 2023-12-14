@@ -1,18 +1,19 @@
 import mongoose from "mongoose";
 
 const connection = {
-  isConnected: false, // Assuming isConnected is initially set to false
+  mongodbConnected: false,
+  socketConnected: false,
 };
 
 export const connectToDB = async () => {
   try {
-    if (connection.isConnected) {
+    if (connection.mongodbConnected) {
       console.log("Already connected to MongoDB");
       return;
     }
 
     const res = await mongoose.connect(process.env.MONGODB_URI);
-    connection.isConnected = true;
+    connection.mongodbConnected = true;
     console.log("mongodb connected, status", res.ConnectionStates.connected);
     mongoose.Promise = global.Promise;
     return;
@@ -21,3 +22,5 @@ export const connectToDB = async () => {
     throw new Error(error);
   }
 };
+
+let socketInstance: WebSocket | null;
