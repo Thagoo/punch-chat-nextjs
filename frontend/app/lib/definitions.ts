@@ -1,0 +1,9 @@
+export interface IMessageData {
+  type: "message";
+  message: {
+    name: string | null;
+    message: string | null;
+    email: string | null;
+    date: string | null;
+  };
+}

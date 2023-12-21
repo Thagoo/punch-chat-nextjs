@@ -1,9 +1,8 @@
-import { signOut, auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export default async function Navbar() {
-  const { user } = (await auth()) || false;
+  const user = await auth();
 
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -88,7 +87,7 @@ export default async function Navbar() {
                 Contact
               </a>
             </li>
-            {user ? (
+            {user != null ? (
               <form
                 action={async () => {
                   "use server";

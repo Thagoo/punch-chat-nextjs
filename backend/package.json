@@ -1,14 +1,17 @@
 {
-  "name": "video-chat-backend",
-  "module": "index.ts",
-  "type": "module",
+  "name": "elysia",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^0.7.2",
+    "@grotto/logysia": "^0.1.1",
+    "elysia": "latest"
+  },
   "devDependencies": {
     "bun-types": "latest"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@types/webrtc": "^0.0.41"
-  }
+  "module": "src/index.js"
 }

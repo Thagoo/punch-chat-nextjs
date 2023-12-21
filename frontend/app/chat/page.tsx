@@ -1,7 +1,8 @@
+import { UserProvider } from "../context/UserContext";
 import { WebSocketProvider } from "../context/WebSocket";
 import Chat from "../ui/chat/chat";
 
-function Page() {
+async function Page() {
   return (
     <div>
       <WebSocketProvider>

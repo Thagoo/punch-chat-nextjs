@@ -9,7 +9,7 @@ const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC = ({ children }) => {
   // Create a single WebSocket instance
-  const socket = new WebSocket("ws://localhost:8080");
+  const socket = new WebSocket("ws://localhost:8080/ws");
 
   return (
     <WebSocketContext.Provider value={socket}>

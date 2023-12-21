@@ -27,7 +27,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/server/peer.js"
+    "app/server/peer.js",
+    "auth.js",
+    "app/ui/chat/sidebar.jsx"
   ],
   "exclude": ["node_modules"]
 }

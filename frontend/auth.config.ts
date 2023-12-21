@@ -9,7 +9,7 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const currentUrl = nextUrl.pathname;
 
-      if (currentUrl == "/") {
+      if (currentUrl == "/" || currentUrl == "/register") {
         return true;
       }
       if (currentUrl == "/login") {

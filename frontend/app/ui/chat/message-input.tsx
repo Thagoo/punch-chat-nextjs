@@ -1,21 +1,44 @@
 "use client";
 import { useWebSocket } from "@/app/context/WebSocket";
+import { IMessageData } from "@/app/lib/definitions";
+import { useRef } from "react";
 import { useFormState } from "react-dom";
 
-function MessageInput() {
+function MessageInput({ user }) {
+  const formRef = useRef(null);
   const socket = useWebSocket();
 
-  const initialState = { message: undefined };
+  const initialState: IMessageData = {
+    type: "message",
+    message: {
+      email: user.email,
+      name: user.name,
+      message: null,
+      date: new Date().toISOString().split("T")[0],
+    },
+  };
 
-  const [state, dispatch] = useFormState(sendMessage, undefined);
+  const [state, dispatch] = useFormState(sendMessage, initialState);
 
-  async function sendMessage(prevState: void | undefined, formData: FormData) {
+  async function sendMessage(prevState: IMessageData, formData: FormData) {
     const message = formData.get("message");
-    socket?.send(JSON.stringify(message));
+
+    const data: IMessageData = {
+      ...prevState,
+    };
+
+    data.message.message = message as string;
+
+    socket.send(JSON.stringify(data));
+
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+    return prevState;
   }
 
   return (
-    <form action={dispatch}>
+    <form action={dispatch} ref={formRef}>
       <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
         <button>
           <svg
