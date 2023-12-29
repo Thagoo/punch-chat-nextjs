@@ -9,7 +9,7 @@ const Sidebar = ({ user }) => {
 
   const handleMessage = async (event) => {
     const data = JSON.parse(event.data);
-    console.log("activeUser", data.message);
+
     if (data.type == "activeUsers") {
       const users = data.message.filter((aUser) => aUser.email !== user.email);
       setActiveUsers(users);
@@ -29,9 +29,7 @@ const Sidebar = ({ user }) => {
   useEffect(() => {
     socket.addEventListener("message", handleMessage);
   }, []);
-  useEffect(() => {
-    console.log("UF acti", activeUsers);
-  }, [activeUsers]);
+  useEffect(() => {}, [activeUsers]);
 
   return (
     <div className="w-[20rem] md:block">

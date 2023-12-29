@@ -18,7 +18,6 @@ function Chat({ user }) {
 
   const handleMessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
 
     if (data.type === "privateChat") {
       if (data.message.fromEmail === user.email) {
@@ -28,7 +27,6 @@ function Chat({ user }) {
   };
 
   const handleJoinUser = () => {
-    console.log("join user");
     const data = {
       type: "joinUser",
       message: {

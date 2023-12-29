@@ -12,7 +12,7 @@ interface TargetUser {
 function ChatBody({ user, targetUser }) {
   const [messages, setMessages] = useState<IMessageData[]>();
   const [filteredMessages, setFilteredMessages] = useState<IMessageData[]>();
-  console.log(targetUser);
+
   const socket = useWebSocket();
 
   const handleMessage = (event) => {
