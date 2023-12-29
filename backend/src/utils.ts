@@ -1,4 +1,4 @@
-export async function userActive(users, email) {
+export async function userActive(clients, email) {
   var active = false;
   users.map((user) => {
     if (user.data.email == email) {

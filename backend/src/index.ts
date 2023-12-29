@@ -1,10 +1,11 @@
 import { Elysia, t } from "elysia";
 import { logger } from "@grotto/logysia";
 import { userActive, userEmails } from "./utils";
+import { IActiveUser } from "./utils/interfaces";
 
-let users = [];
-let clients = new Map();
+let activeUsers = {};
 
+let clients = {};
 const app = new Elysia();
 app.ws("/ws", {
   async open(ws) {
@@ -15,34 +16,32 @@ app.ws("/ws", {
     console.log(message);
 
     if (message.type === "joinUser") {
-      const active = await userActive(users, message.email);
-      console.log(active);
-      if (active == false) {
-        ws.data.email = message.email;
-        users.push(ws);
-        let emails = userEmails(users);
+      if (!clients[message.message.email]) {
+        clients[message.message.email] = ws;
+        ws.data.email = message.message.email;
+        activeUsers[message.message.email] = message.message;
         const data = {
           type: "activeUsers",
-          emails,
+          message: Object.values(activeUsers),
         };
-        ws.send(JSON.stringify(data));
+        console.log("join user", activeUsers);
         ws.publish("chat", JSON.stringify(data));
+        ws.send(JSON.stringify(data));
       }
     }
     if (message.type === "privateChat") {
-      const privateUsers = [message.message.fromEmail, message.message.toEmail];
-
-      users.map((user) => {
-        if (privateUsers.includes(user.data.email)) {
-          user.send(message);
-        }
-      });
-    }
-    if (message.type === "message") {
-      ws.subscribe("chat");
-      ws.publish("chat", message);
       ws.send(message);
     }
+
+    if (message.type == "message" && message.message.toEmail) {
+      ws.send(message);
+      clients[message.message.toEmail].send(message);
+    }
+  },
+  close: (ws) => {
+    delete clients[ws.data.email];
+    delete activeUsers[ws.data.email];
+    console.log("delete", clients);
   },
 });
 

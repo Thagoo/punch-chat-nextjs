@@ -9,7 +9,11 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const currentUrl = nextUrl.pathname;
 
-      if (currentUrl == "/" || currentUrl == "/register") {
+      if (currentUrl == "/") {
+        return true;
+      }
+      if (currentUrl == "/register") {
+        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
         return true;
       }
       if (currentUrl == "/login") {

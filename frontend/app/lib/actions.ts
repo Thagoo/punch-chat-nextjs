@@ -4,6 +4,7 @@ import { connectToDB } from "./utils";
 import { User } from "./models";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { redirect } from "next/navigation";
 
 const userSchema = z.object({
   name: z.string({
@@ -41,7 +42,7 @@ export async function addUser(prevState: State, formData: FormData) {
     const validateUserFields = userSchema.safeParse({
       name: formData.get("name"),
       email: formData.get("email"),
-      avatar: formData.get("avatar"),
+      avatar: formData.get("avatar") || "",
       password: formData.get("password"),
       isAdmin: formData.get("isAdmin") || false,
     });
@@ -57,7 +58,7 @@ export async function addUser(prevState: State, formData: FormData) {
     const duplicateEmail = await User.findOne({
       email: validateUserFields.data.email,
     });
-    console.log(duplicateEmail);
+
     if (duplicateEmail) {
       return {
         errors: { email: ["Email already exists"] },
@@ -68,11 +69,18 @@ export async function addUser(prevState: State, formData: FormData) {
     validateUserFields.data.password = hash;
     const user = new User(validateUserFields.data);
     await user.save();
-    console.log("user save", user);
+    try {
+      const data = {
+        email: validateUserFields.data.email,
+        password: validateUserFields.data.password,
+      };
 
-    formData.append("email", validateUserFields.data.email);
-    formData.append("password", validateUserFields.data.password);
-    authenticate(prevState, formData);
+      await signIn("credentials", data);
+    } catch (error) {
+      console.log(error.name);
+    }
+
+    prevState.message = "success";
     return prevState;
   } catch (error) {
     console.log(error);

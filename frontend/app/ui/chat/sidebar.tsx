@@ -5,39 +5,33 @@ import { useEffect, useState } from "react";
 const Sidebar = ({ user }) => {
   const socket = useWebSocket();
 
-  const [emails, setEmails] = useState<string[]>();
+  const [activeUsers, setActiveUsers] = useState([]);
 
   const handleMessage = async (event) => {
     const data = JSON.parse(event.data);
-
+    console.log("activeUser", data.message);
     if (data.type == "activeUsers") {
-      const newEmails = data.emails;
-
-      const removeCurrentUser = newEmails.filter(
-        (email) => email !== user.email
-      );
-      console.log(removeCurrentUser);
-      setEmails(removeCurrentUser);
+      const users = data.message.filter((aUser) => aUser.email !== user.email);
+      setActiveUsers(users);
     }
-    return () => {
-      socket.close();
-    };
   };
 
-  const handlePrivateChat = (toEmail: string) => {
+  const handlePrivateChat = (targetUser: Object) => {
     const data = {
       type: "privateChat",
       message: {
-        toEmail: toEmail,
+        targetUser,
         fromEmail: user.email,
       },
     };
     socket.send(JSON.stringify(data));
   };
-
   useEffect(() => {
     socket.addEventListener("message", handleMessage);
   }, []);
+  useEffect(() => {
+    console.log("UF acti", activeUsers);
+  }, [activeUsers]);
 
   return (
     <div className="w-[20rem] md:block">
@@ -47,12 +41,12 @@ const Sidebar = ({ user }) => {
         </div>
 
         <ul>
-          {emails?.map((email) => (
+          {activeUsers?.map((user) => (
             <button
               className="w-full p-4 bg-white hover:bg-gray-50"
-              onClick={() => handlePrivateChat(email)}
+              onClick={() => handlePrivateChat(user)}
             >
-              {email}
+              {user?.email}
             </button>
           ))}
         </ul>

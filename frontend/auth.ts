@@ -24,22 +24,19 @@ export const { signIn, signOut, auth } = NextAuth({
     CredentialsProvider({
       async authorize(credentials) {
         const { email, password }: typeof credentials = credentials;
-        try {
-          const user = await login(email, password);
+        const user = await login(email, password);
 
-          return user;
-        } catch (err) {
-          return null;
-        }
+        return user;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = user._id;
         token.email = user.email;
-        token.image = user.image;
+        token.avatar = user.avatar;
+        token.name = user.name;
       }
 
       return token;
@@ -48,7 +45,7 @@ export const { signIn, signOut, auth } = NextAuth({
       if (token) {
         if (session.user) {
           session.user.email = token.email;
-          // session.user.image = token.image;
+          session.user.avatar = token.avatar;
         }
       }
 

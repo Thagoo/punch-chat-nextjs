@@ -4,14 +4,20 @@ import { useFormState, useFormStatus } from "react-dom";
 import { Button } from "./button";
 import Link from "next/link";
 import { authenticate } from "@/app/lib/actions";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
+  const router = useRouter();
   const initialState = {
     message: null,
     errors: {},
   };
   const [state, dispatch] = useFormState(authenticate, initialState);
 
+  useEffect(() => {
+    router.refresh();
+  }, []);
   return (
     <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">

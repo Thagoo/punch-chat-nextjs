@@ -1,10 +1,10 @@
 "use client";
 import { useWebSocket } from "@/app/context/WebSocket";
 import { IMessageData } from "@/app/lib/definitions";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 
-function MessageInput({ user }) {
+function MessageInput({ user, targetUser }) {
   const formRef = useRef(null);
   const socket = useWebSocket();
 
@@ -12,6 +12,7 @@ function MessageInput({ user }) {
     type: "message",
     message: {
       email: user.email,
+      toEmail: targetUser,
       name: user.name,
       message: null,
       date: new Date().toISOString().split("T")[0],
@@ -28,7 +29,7 @@ function MessageInput({ user }) {
     };
 
     data.message.message = message as string;
-
+    data.message.toEmail = targetUser.email;
     socket.send(JSON.stringify(data));
 
     if (formRef.current) {

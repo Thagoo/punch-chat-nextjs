@@ -5,5 +5,6 @@ export interface IMessageData {
     message: string | null;
     email: string | null;
     date: string | null;
+    toEmail: string | null;
   };
 }

@@ -8,8 +8,8 @@ export default function Page() {
         <div className="flex w-full justify-center items-center rounded-lg bg-blue-500 p-3 md:h-36">
           <div className="w-32  md:w-36">
             <Link href="/">
-              <span className="text-2xl font-semibold whitespace-nowrap dark:text-white">
-                Adarshini
+              <span className="text-2xl font-extrabold sm:text-5xl text-white">
+                Punch
               </span>
             </Link>
           </div>
