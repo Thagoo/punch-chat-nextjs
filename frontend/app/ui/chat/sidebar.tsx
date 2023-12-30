@@ -1,17 +1,26 @@
 "use client";
 import { useWebSocket } from "@/app/context/WebSocket";
+import { UserInfoProps } from "@/app/types/User";
 import { useEffect, useState } from "react";
 
-const Sidebar = ({ user }) => {
+type ActiveUser = {
+  email: string | null;
+  name: string | null;
+  avatar: string | null;
+};
+
+const Sidebar = ({ user }: UserInfoProps) => {
   const socket = useWebSocket();
 
-  const [activeUsers, setActiveUsers] = useState([]);
+  const [activeUsers, setActiveUsers] = useState<ActiveUser[]>();
 
-  const handleMessage = async (event) => {
+  const handleMessage = async (event: MessageEvent) => {
     const data = JSON.parse(event.data);
 
     if (data.type == "activeUsers") {
-      const users = data.message.filter((aUser) => aUser.email !== user.email);
+      const users = data.message.filter(
+        (activeUser: ActiveUser) => activeUser.email !== user?.email
+      );
       setActiveUsers(users);
     }
   };
@@ -21,7 +30,7 @@ const Sidebar = ({ user }) => {
       type: "privateChat",
       message: {
         targetUser,
-        fromEmail: user.email,
+        fromEmail: user?.email,
       },
     };
     socket.send(JSON.stringify(data));

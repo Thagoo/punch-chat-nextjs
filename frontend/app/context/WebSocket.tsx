@@ -1,13 +1,15 @@
 "use client";
-import React, { createContext, useContext } from "react";
+import React, { ReactNode, createContext, useContext } from "react";
 
-interface WebSocketContextType extends WebSocket {
-  // Add any additional methods or properties you want to expose
+interface WebSocketContextType extends WebSocket {}
+interface WebSocketProviderProps {
+  children: ReactNode;
 }
-
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
-export const WebSocketProvider: React.FC = ({ children }) => {
+export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
+  children,
+}) => {
   // Create a single WebSocket instance
   const socket = new WebSocket("ws://localhost:8080/ws");
 

@@ -1,8 +1,9 @@
 import { auth, signOut } from "@/auth";
+
 import Link from "next/link";
 
 export default async function Navbar() {
-  const user = await auth();
+  const session = await auth();
 
   return (
     <nav className="bg-gray-50 border-gray-200 dark:bg-gray-900">
@@ -46,17 +47,24 @@ export default async function Navbar() {
         </button>
         <div className="hidden w-full md:block md:w-auto" id="navbar-default">
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            {user != null ? (
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut();
-                }}
-              >
-                <button className="flex  grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-                  <div className="hidden md:block">Sign Out</div>
-                </button>
-              </form>
+            {session?.user != null ? (
+              <div className="flex">
+                <img
+                  className="object-cover w-10 h-10 rounded-full bg-slate-200"
+                  src={session.user.avatar}
+                  alt="avatar"
+                />
+                <form
+                  action={async () => {
+                    "use server";
+                    await signOut();
+                  }}
+                >
+                  <button className="flex  grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+                    <div className="hidden md:block">Sign Out</div>
+                  </button>
+                </form>
+              </div>
             ) : (
               <>
                 <li>

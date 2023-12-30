@@ -1,19 +1,26 @@
 "use client";
 import { useWebSocket } from "@/app/context/WebSocket";
-import { IMessageData } from "@/app/lib/definitions";
+import { MessageInitialState, TextMessage } from "@/app/types/Message";
+import { TargetUser, User, UserInfoProps } from "@/app/types/User";
 import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 
-function MessageInput({ user, targetUser }) {
+function MessageInput({
+  user,
+  targetUser,
+}: {
+  user: User;
+  targetUser: TargetUser;
+}) {
   const formRef = useRef(null);
   const socket = useWebSocket();
 
-  const initialState: IMessageData = {
+  const initialState: MessageInitialState = {
     type: "message",
     message: {
-      email: user.email,
-      toEmail: targetUser,
-      name: user.name,
+      email: user?.email,
+      toEmail: targetUser.email,
+      name: user?.name,
       message: null,
       date: new Date().toISOString().split("T")[0],
     },
@@ -21,10 +28,13 @@ function MessageInput({ user, targetUser }) {
 
   const [state, dispatch] = useFormState(sendMessage, initialState);
 
-  async function sendMessage(prevState: IMessageData, formData: FormData) {
+  async function sendMessage(
+    prevState: MessageInitialState,
+    formData: FormData
+  ) {
     const message = formData.get("message");
 
-    const data: IMessageData = {
+    const data: MessageInitialState = {
       ...prevState,
     };
 

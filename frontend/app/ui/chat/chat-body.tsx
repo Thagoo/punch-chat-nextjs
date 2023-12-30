@@ -1,21 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/app/context/WebSocket";
-import { IMessageData } from "@/app/lib/definitions";
 
-interface TargetUser {
-  email: string | null;
-  name: string | null;
-  avatar: string | null;
-}
+import { TargetUser, User } from "@/app/types/User";
+import { TextMessage } from "@/app/types/Message";
 
-function ChatBody({ user, targetUser }) {
-  const [messages, setMessages] = useState<IMessageData[]>();
-  const [filteredMessages, setFilteredMessages] = useState<IMessageData[]>();
+function ChatBody({
+  user,
+  targetUser,
+}: {
+  user: User | undefined;
+  targetUser: TargetUser;
+}) {
+  const [messages, setMessages] = useState<TextMessage[]>();
+  const [filteredMessages, setFilteredMessages] = useState<TextMessage[]>();
 
   const socket = useWebSocket();
 
-  const handleMessage = (event) => {
+  const handleMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
 
     if (data.type === "message") {
@@ -42,7 +44,7 @@ function ChatBody({ user, targetUser }) {
       <div className="relative flex items-center p-3 border-b border-gray-300">
         <img
           className="object-cover w-10 h-10 rounded-full"
-          src={targetUser?.avatar}
+          src={targetUser.avatar}
           alt="avatar"
         />
         <span className="block ml-2 font-bold text-gray-600">
@@ -55,7 +57,7 @@ function ChatBody({ user, targetUser }) {
           {filteredMessages?.map((message) => (
             <li
               className={`flex ${
-                message.email === user.email ? `justify-end` : `justify-start`
+                message.email === user?.email ? `justify-end` : `justify-start`
               }`}
             >
               <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">

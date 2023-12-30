@@ -1,6 +1,7 @@
-import NextAuth from "next-auth";
+import NextAuth, { JWT } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
+
 import { connectToDB } from "./app/lib/utils";
 import { User } from "@/app/lib/models";
 import z from "zod";
@@ -34,18 +35,23 @@ export const { signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user._id;
+        token.name = user.email;
         token.email = user.email;
         token.avatar = user.avatar;
-        token.name = user.name;
+        token.isAdmin = user.isAdmin;
       }
 
       return token;
     },
     async session({ session, token }) {
       if (token) {
+        const typedToken = token as unknown as JWT;
         if (session.user) {
-          session.user.email = token.email;
-          session.user.avatar = token.avatar;
+          session.user.id = typedToken.id;
+          session.user.name = typedToken.name;
+          session.user.email = typedToken.email;
+          session.user.avatar = typedToken.avatar;
+          session.user.isAdmin = typedToken.isAdmin;
         }
       }
 

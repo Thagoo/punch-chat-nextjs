@@ -5,22 +5,23 @@ import MessageInput from "./message-input";
 import Sidebar from "./sidebar";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/app/context/WebSocket";
+import { TargetUser, UserInfoProps, User } from "@/app/types/User";
+import { auth } from "@/auth";
 
-interface TargetUser {
-  email: string | null;
-  name: string | null;
-  avatar: string | null;
-}
-
-function Chat({ user }) {
+function Chat() {
+  const [userDetails, setUserDetails] = useState<User>();
+  const fetchUserDetails = async () => {
+    const session = await auth();
+    setUserDetails(session?.user);
+  };
   const [targetUser, setTargetUser] = useState<TargetUser>();
   const socket = useWebSocket();
 
-  const handleMessage = (event) => {
+  const handleMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
 
     if (data.type === "privateChat") {
-      if (data.message.fromEmail === user.email) {
+      if (data.message.fromEmail === userDetails?.email) {
         setTargetUser(data.message.targetUser);
       }
     }
@@ -30,9 +31,9 @@ function Chat({ user }) {
     const data = {
       type: "joinUser",
       message: {
-        email: user.email,
-        avatar: user.avatar,
-        name: user.name,
+        email: userDetails?.email,
+        avatar: userDetails?.avatar,
+        name: userDetails?.name,
       },
     };
 
@@ -40,6 +41,7 @@ function Chat({ user }) {
   };
 
   useEffect(() => {
+    fetchUserDetails();
     if (socket.readyState === WebSocket.OPEN) {
       // Connection is already open
       handleJoinUser();
@@ -65,16 +67,16 @@ function Chat({ user }) {
 
   return (
     <div className="h-[100vh] w-full flex flex-row">
-      <Sidebar user={user} />
+      <Sidebar user={userDetails} />
 
       <div className="w-full border rounded ">
         {targetUser ? (
           <div className="flex flex-col h-full">
             <div>
-              <ChatBody user={user} targetUser={targetUser} />
+              <ChatBody user={userDetails} targetUser={targetUser} />
             </div>
             <div className="mt-auto ">
-              <MessageInput user={user} targetUser={targetUser} />
+              <MessageInput user={userDetails} targetUser={targetUser} />
             </div>
           </div>
         ) : (
