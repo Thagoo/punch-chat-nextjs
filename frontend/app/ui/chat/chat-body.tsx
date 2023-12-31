@@ -21,7 +21,7 @@ function ChatBody({
     const data = JSON.parse(event.data);
 
     if (data.type === "message") {
-      setMessages((prev) => [...(prev ?? []), data.message]);
+      setMessages((prev) => [...(prev ?? []), data.payload]);
     }
   };
 
@@ -32,9 +32,9 @@ function ChatBody({
   useEffect(() => {
     setFilteredMessages(
       messages?.filter(
-        (message) =>
-          message.email == targetUser.email ||
-          message.toEmail == targetUser.email
+        (payload) =>
+          payload.email == targetUser.email ||
+          payload.toEmail == targetUser.email
       )
     );
   }, [messages, targetUser]);

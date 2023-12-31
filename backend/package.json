@@ -8,7 +8,8 @@
   "dependencies": {
     "@elysiajs/cors": "^0.7.2",
     "@grotto/logysia": "^0.1.1",
-    "elysia": "latest"
+    "elysia": "latest",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "bun-types": "latest"

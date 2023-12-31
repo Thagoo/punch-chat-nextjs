@@ -5,15 +5,15 @@ import MessageInput from "./message-input";
 import Sidebar from "./sidebar";
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/app/context/WebSocket";
-import { TargetUser, UserInfoProps, User } from "@/app/types/User";
+import { TargetUser, User } from "@/app/types/User";
 import { auth } from "@/auth";
+import { fetchUser } from "@/app/lib/data";
+import { z } from "zod";
 
-function Chat() {
-  const [userDetails, setUserDetails] = useState<User>();
-  const fetchUserDetails = async () => {
-    const session = await auth();
-    setUserDetails(session?.user);
-  };
+type UserInfoProps = {
+  userDetails: User | undefined;
+};
+function Chat({ userDetails }: UserInfoProps) {
   const [targetUser, setTargetUser] = useState<TargetUser>();
   const socket = useWebSocket();
 
@@ -21,8 +21,8 @@ function Chat() {
     const data = JSON.parse(event.data);
 
     if (data.type === "privateChat") {
-      if (data.message.fromEmail === userDetails?.email) {
-        setTargetUser(data.message.targetUser);
+      if (data.payload.fromEmail === userDetails?.email) {
+        setTargetUser(data.payload.targetUser);
       }
     }
   };
@@ -30,7 +30,7 @@ function Chat() {
   const handleJoinUser = () => {
     const data = {
       type: "joinUser",
-      message: {
+      payload: {
         email: userDetails?.email,
         avatar: userDetails?.avatar,
         name: userDetails?.name,
@@ -41,7 +41,6 @@ function Chat() {
   };
 
   useEffect(() => {
-    fetchUserDetails();
     if (socket.readyState === WebSocket.OPEN) {
       // Connection is already open
       handleJoinUser();

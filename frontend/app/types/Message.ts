@@ -8,7 +8,7 @@ export interface TextMessage {
 
 export interface MessageInitialState {
   type: string | null;
-  message: {
+  payload: {
     name: string | null;
     message: string | null;
     email: string | null;

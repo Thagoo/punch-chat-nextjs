@@ -1,47 +1,62 @@
-import { Elysia, t } from "elysia";
+import { Context, Elysia } from "elysia";
 import { logger } from "@grotto/logysia";
-import { userActive, userEmails } from "./utils";
-import { IActiveUser } from "./utils/interfaces";
+import { ActiveUsersData, IActiveUser, Message } from "./types/types";
+import { ElysiaWS } from "elysia/dist/ws";
+import { ServerWebSocket, WebSocketHandler } from "bun";
 
-let activeUsers = {};
+let activeUsers: Record<string, IActiveUser> = {};
+interface Clients {
+  [email: string]: ServerWebSocket;
+}
+let clients: Clients = {};
 
-let clients = {};
+interface TWebSocket extends ServerWebSocket {
+  email: string;
+}
 const app = new Elysia();
 app.ws("/ws", {
   async open(ws) {
-    console.log("open");
     ws.subscribe("chat");
+    console.log("connection open", ws.id);
   },
-  async message(ws, message) {
-    console.log(message);
+  async message(ws, request) {
+    const data = request as Message;
+    console.log(data);
+    if (data.type === "joinUser") {
+      const user = data.payload as IActiveUser;
 
-    if (message.type === "joinUser") {
-      if (!clients[message.message.email]) {
-        clients[message.message.email] = ws;
-        ws.data.email = message.message.email;
-        activeUsers[message.message.email] = message.message;
-        const data = {
+      if (!clients[user.email]) {
+        clients[user.email] = ws;
+        ws.data.email = user.email;
+        activeUsers[user.email] = user;
+
+        const response: ActiveUsersData = {
           type: "activeUsers",
-          message: Object.values(activeUsers),
+          payload: Object.values(activeUsers),
         };
-        console.log("join user", activeUsers);
-        ws.publish("chat", JSON.stringify(data));
-        ws.send(JSON.stringify(data));
+
+        ws.publish("chat", JSON.stringify(response));
+        ws.send(JSON.stringify(response));
       }
     }
-    if (message.type === "privateChat") {
-      ws.send(message);
+
+    if (data.type === "privateChat") {
+      ws.send(data);
     }
 
-    if (message.type == "message" && message.message.toEmail) {
-      ws.send(message);
-      clients[message.message.toEmail].send(message);
+    if (data.type === "message" && data.payload.toEmail) {
+      ws.send(data);
+      const toEmail = data.payload.toEmail;
+
+      if (clients[toEmail]) {
+        clients[toEmail].send(data);
+      }
     }
   },
-  close: (ws) => {
-    delete clients[ws.data.email];
-    delete activeUsers[ws.data.email];
-    console.log("delete", clients);
+  close(ws) {
+    const userEmail = ws.data.email;
+    delete clients[userEmail];
+    delete activeUsers[userEmail];
   },
 });
 

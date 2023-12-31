@@ -17,7 +17,7 @@ function MessageInput({
 
   const initialState: MessageInitialState = {
     type: "message",
-    message: {
+    payload: {
       email: user?.email,
       toEmail: targetUser.email,
       name: user?.name,
@@ -38,8 +38,8 @@ function MessageInput({
       ...prevState,
     };
 
-    data.message.message = message as string;
-    data.message.toEmail = targetUser.email;
+    data.payload.message = message as string;
+    data.payload.toEmail = targetUser.email;
     socket.send(JSON.stringify(data));
 
     if (formRef.current) {

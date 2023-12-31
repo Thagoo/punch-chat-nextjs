@@ -18,7 +18,7 @@ const Sidebar = ({ user }: UserInfoProps) => {
     const data = JSON.parse(event.data);
 
     if (data.type == "activeUsers") {
-      const users = data.message.filter(
+      const users = data.payload.filter(
         (activeUser: ActiveUser) => activeUser.email !== user?.email
       );
       setActiveUsers(users);
@@ -28,7 +28,7 @@ const Sidebar = ({ user }: UserInfoProps) => {
   const handlePrivateChat = (targetUser: Object) => {
     const data = {
       type: "privateChat",
-      message: {
+      payload: {
         targetUser,
         fromEmail: user?.email,
       },
