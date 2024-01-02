@@ -1,18 +1,11 @@
-import { Context, Elysia } from "elysia";
+import { Elysia } from "elysia";
 import { logger } from "@grotto/logysia";
 import { ActiveUsersData, IActiveUser, Message } from "./types/types";
-import { ElysiaWS } from "elysia/dist/ws";
-import { ServerWebSocket, WebSocketHandler } from "bun";
 
-let activeUsers: Record<string, IActiveUser> = {};
-interface Clients {
-  [email: string]: ServerWebSocket;
-}
-let clients: Clients = {};
+import WebSocketHandler from "./WebsocketHandler";
 
-interface TWebSocket extends ServerWebSocket {
-  email: string;
-}
+const socket = new WebSocketHandler();
+
 const app = new Elysia();
 app.ws("/ws", {
   async open(ws) {
@@ -21,42 +14,19 @@ app.ws("/ws", {
   },
   async message(ws, request) {
     const data = request as Message;
-    console.log(data);
+
     if (data.type === "joinUser") {
-      const user = data.payload as IActiveUser;
-
-      if (!clients[user.email]) {
-        clients[user.email] = ws;
-        ws.data.email = user.email;
-        activeUsers[user.email] = user;
-
-        const response: ActiveUsersData = {
-          type: "activeUsers",
-          payload: Object.values(activeUsers),
-        };
-
-        ws.publish("chat", JSON.stringify(response));
-        ws.send(JSON.stringify(response));
-      }
+      socket.handleJoinUser(ws, data);
     }
-
     if (data.type === "privateChat") {
       ws.send(data);
     }
-
     if (data.type === "message" && data.payload.toEmail) {
-      ws.send(data);
-      const toEmail = data.payload.toEmail;
-
-      if (clients[toEmail]) {
-        clients[toEmail].send(data);
-      }
+      socket.handlePrivateMessage(ws, data);
     }
   },
   close(ws) {
-    const userEmail = ws.data.email;
-    delete clients[userEmail];
-    delete activeUsers[userEmail];
+    socket.handleClose(ws);
   },
 });
 
