@@ -4,6 +4,7 @@ import { useWebSocket } from "@/app/context/WebSocket";
 
 import { TargetUser, User } from "@/app/types/User";
 import { TextMessage } from "@/app/types/Message";
+import Image from "next/image";
 
 function ChatBody({
   user,
@@ -42,8 +43,10 @@ function ChatBody({
   return (
     <>
       <div className="relative flex items-center p-3 border-b border-gray-300">
-        <img
-          className="object-cover w-10 h-10 rounded-full"
+        <Image
+          className="object-cover rounded-full bg-slate-200 "
+          width={30}
+          height={30}
           src={targetUser.avatar}
           alt="avatar"
         />

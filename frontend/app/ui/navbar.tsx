@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/auth";
+import Image from "next/image";
 
 import Link from "next/link";
 
@@ -49,8 +50,10 @@ export default async function Navbar() {
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             {session?.user != null ? (
               <div className="flex">
-                <img
-                  className="object-cover w-10 h-10 rounded-full bg-slate-200"
+                <Image
+                  className="object-cover rounded-full bg-slate-200 "
+                  width={30}
+                  height={30}
                   src={session.user.avatar}
                   alt="avatar"
                 />
