@@ -25,7 +25,7 @@ export default function LoginForm() {
     <div className="bg-gray-50  mt-10 rounded-lg sm:border-2 px-4 lg:px-6 py-10 lg:max-w-md sm:max-w-md w-full text-center">
       <div className="flex flex-col items-center justify-center">
         <Image
-          src="/lock-icon.svg"
+          src="/assets/lock-icon.svg"
           alt="lock"
           width={35}
           height={35}
