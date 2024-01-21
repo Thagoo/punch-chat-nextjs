@@ -1,7 +1,7 @@
 "use server";
 
 import { User } from "./models";
-import { connectDb } from "./utils";
+import { connectDb, convertToFile } from "./utils";
 import z from "zod";
 import bcrypt from "bcrypt";
 import { signIn } from "./auth";
@@ -18,7 +18,10 @@ let userSchema = z.object({
     .email("Please provide a valid email")
     .min(1, "Value is too short"),
   password: z.string("Please fill this field").min(4, "Password is too short"),
+  avatar: z.string(""),
 });
+
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 
 const loginUserSchema = z.object({
   email: userSchema.shape.email,
@@ -27,9 +30,12 @@ const loginUserSchema = z.object({
 
 export const register = async (prevState, formData) => {
   let newUserData = Object.fromEntries(formData);
+
   const validateUserData = userSchema.safeParse(newUserData);
 
   if (!validateUserData.success) {
+    const errorss = validateUserData.error.flatten().fieldErrors;
+    console.log(validateUserData, errorss);
     return {
       errors: validateUserData.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to User.",
@@ -46,16 +52,38 @@ export const register = async (prevState, formData) => {
       prevState.errors.email = ["Email already exists try different"];
       return prevState;
     }
+
+    const avatarData = new FormData();
+    if (newUserData.avatar) {
+      const avatar = await convertToFile(newUserData.avatar);
+      avatarData.append("file", avatar);
+      avatarData.append("upload_preset", "upload");
+    }
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "post",
+        body: avatarData,
+      }
+    );
+    const parsed = await response.json();
+    validateUserData.data.avatar = parsed.url;
+
     const hashedPassword = bcrypt.hashSync(validateUserData.data.password, 10);
     validateUserData.data.password = hashedPassword;
 
     const user = new User(validateUserData.data);
+
     await user.save();
 
     // Signing In user straight away
     await signIn("credentials", validateUserData.data);
 
-    return;
+    return {
+      errors: null,
+      message: "User successfully created",
+    };
   } catch (error) {
     throw error;
   }
