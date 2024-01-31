@@ -14,9 +14,9 @@ export const {
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        const { email } = credentials;
+        const { username } = credentials;
         // user is already authenticated before signIn
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ username: username });
         if (user) return user;
         return null;
       },

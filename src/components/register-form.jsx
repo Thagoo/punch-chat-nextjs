@@ -194,6 +194,27 @@ export default function RegisterForm() {
           </div>
           <div className="py-2 text-left">
             <input
+              type="text"
+              className={`border-2 ${
+                validationError?.errors?.username
+                  ? "border-red-300"
+                  : "border-gray-100"
+              } focus:outline-none  block w-full py-2 px-4 rounded-lg focus:border-gray-700 `}
+              placeholder="Username"
+              id="username"
+              name="username"
+              onChange={handleResetValidationErrors}
+              required
+            />
+            {validationError.errors?.username &&
+              validationError.errors.username.map((error) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+          <div className="py-2 text-left">
+            <input
               type="password"
               className={`border-2 ${
                 validationError?.errors?.password

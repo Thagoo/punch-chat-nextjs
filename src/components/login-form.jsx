@@ -36,20 +36,20 @@ export default function LoginForm() {
       <form action={formAction} className="text-center">
         <div className="py-2 text-left">
           <input
-            type="email"
+            type="text"
             className={`border-2 ${
-              validationError?.errors?.email
+              validationError?.errors?.username
                 ? "border-red-300"
                 : "border-gray-100"
             } focus:outline-none  block w-full py-2 px-4 rounded-lg focus:border-gray-700 `}
-            placeholder="Email"
-            id="email"
-            name="email"
+            placeholder="Username"
+            id="username"
+            name="username"
             onChange={handleReset}
             required
           />
-          {validationError.errors?.email &&
-            validationError.errors.email.map((error) => (
+          {validationError.errors?.username &&
+            validationError.errors.username.map((error) => (
               <p className="mt-2 text-sm text-red-500" key={error}>
                 {error}
               </p>

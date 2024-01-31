@@ -16,15 +16,25 @@ let userSchema = z.object({
   email: z
     .string("Please fill this field")
     .email("Please provide a valid email")
-    .min(1, "Value is too short"),
-  password: z.string("Please fill this field").min(4, "Password is too short"),
+    .min(5, "Value is too short"),
+  username: z
+    .string("Please fill this field")
+    .min(3, "Value is too short")
+    .regex(
+      /^[a-zA-Z0-9]+$/,
+      "This field cannot contain white space and special character"
+    ),
+  password: z
+    .string("Please fill this field")
+    .min(4, "Password is too short")
+    .max(15, "Maximum 15 characters"),
   avatar: z.string(""),
 });
 
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 
 const loginUserSchema = z.object({
-  email: userSchema.shape.email,
+  username: userSchema.shape.username,
   password: userSchema.shape.password,
 });
 
@@ -35,7 +45,7 @@ export const register = async (prevState, formData) => {
 
   if (!validateUserData.success) {
     const errorss = validateUserData.error.flatten().fieldErrors;
-    console.log(validateUserData, errorss);
+
     return {
       errors: validateUserData.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to User.",
@@ -44,12 +54,21 @@ export const register = async (prevState, formData) => {
   try {
     connectDb();
 
-    const existingUser = await User.findOne({
+    const existingEmail = await User.findOne({
       email: validateUserData.data.email,
     });
-    if (existingUser) {
+    if (existingEmail) {
       // Matching zod's practice
       prevState.errors.email = ["Email already exists try different"];
+      return prevState;
+    }
+
+    const existingUsername = await User.findOne({
+      username: validateUserData.data.username,
+    });
+    if (existingUsername) {
+      // Matching zod's practice
+      prevState.errors.username = ["Username already exists try different"];
       return prevState;
     }
 
@@ -103,11 +122,13 @@ export const login = async (prevState, formData) => {
   try {
     connectDb();
 
-    const user = await User.findOne({ email: validateUserData.data.email });
+    const user = await User.findOne({
+      username: validateUserData.data.username,
+    });
 
     if (!user) {
       // Matching zod's practice
-      prevState.errors.email = ["Email does not exist"];
+      prevState.errors.username = ["Username does not exist"];
       return prevState;
     }
     const isPasswordMatch = await bcrypt.compare(
