@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function ChatSkeleton() {
   return (
     <div className="flex flex-grow h-[80%] ">

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { convertToFile, resizeImage } from "@/lib/utils";
 import Cropper from "react-cropper";
-import Modal from "./ui/modal";
+import Modal from "@/ui/modal";
 import "cropperjs/dist/cropper.css";
 
 export default function RegisterForm() {
