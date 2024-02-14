@@ -22,19 +22,19 @@ export const searchUsers = createAsyncThunk(
 export const searchUserSlice = createSlice({
   name: "searchUser",
   initialState: {
-    searchResult: null,
+    searchUser: null,
   },
   reducers: {
-    setSearchResult: (state, action) => {
-      state.searchResult = action.payload;
+    setSearchUser: (state, action) => {
+      state.searchUser = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(searchUsers.fulfilled, (state, action) => {
-      state.searchResult = action.payload;
+      state.searchUser = action.payload;
     });
   },
 });
 
-export const { setSearchResult } = searchUserSlice.actions;
-export const selectSearchResult = (state) => state.searchUser.searchResult;
+export const { setSearchUser } = searchUserSlice.actions;
+export const selectSearchUser = (state) => state.searchUser.searchUser;
