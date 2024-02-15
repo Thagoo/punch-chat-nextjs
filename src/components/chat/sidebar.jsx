@@ -2,7 +2,7 @@ import Search from "@/ui/search";
 import { useSelector } from "react-redux";
 import { selectSearchUser } from "@/lib/redux/features/searchUser/searchUserSlice";
 
-import { Contacts } from "@/ui/contact-user";
+import Contacts from "@/ui/contact-user";
 
 export default function Sidebar() {
   const searchUser = useSelector(selectSearchUser);
@@ -11,9 +11,7 @@ export default function Sidebar() {
     <div className="flex flex-col ">
       <Search placeholder="Search users" />
 
-      <ul className="mt-2 ">
-        {searchUser && <Contacts contactUser={searchUser} />}
-      </ul>
+      <ul>{searchUser && <Contacts contactUser={searchUser} />}</ul>
     </div>
   );
 }

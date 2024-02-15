@@ -1,6 +1,6 @@
 export default function ChatSkeleton() {
   return (
-    <div className="flex flex-grow h-[80%] ">
+    <div className="flex flex-grow h-[80%]">
       <div className="w-full md:w-[25%] border rounded p-2">
         <div className="space-y-5 rounded-2xl bg-white/5 p-4 ">
           <div
