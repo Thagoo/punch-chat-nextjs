@@ -11,11 +11,12 @@ export const websocketSlice = createSlice({
     initializeWebSocket: (state, action) => {
       state.socket = action.payload;
     },
-    handleMessage: (state, action) => {
+    handleSendMessage: (state, action) => {
       state.socket && state.socket.send(JSON.stringify(action.payload));
     },
   },
 });
 
-export const { initializeWebSocket, handleMessage } = websocketSlice.actions;
+export const { initializeWebSocket, handleSendMessage } =
+  websocketSlice.actions;
 export const selectWebSocket = (state) => state.websocket.socket;
