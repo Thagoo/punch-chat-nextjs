@@ -1,15 +1,18 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Contacts({ contactUser }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <>
       <div
-        className={`rounded-sm py-2 text-sm hover:bg-gray-100 ${
-          pathname.includes(contactUser.id) ? "bg-gray-100" : "bg-white"
+        className={`rounded-sm py-2 text-sm hover:bg-gray-300 ${
+          pathname.includes(contactUser.id) ? "bg-gray-300" : "bg-white"
         }`}
       >
         <li>
@@ -23,7 +26,11 @@ export default function Contacts({ contactUser }) {
                 className="rounded-full p-1 mr-2"
               />
               <div className="flex flex-col flex-grow">
-                <p className="text-lg ">{contactUser.firstName}</p>
+                <p className="text-lg ">
+                  {session?.user.id == contactUser.id
+                    ? "You"
+                    : contactUser.firstName}
+                </p>
                 <p className="text-xs text-slate-800">
                   @{contactUser.username}
                 </p>

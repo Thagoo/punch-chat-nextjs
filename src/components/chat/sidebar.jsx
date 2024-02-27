@@ -11,7 +11,17 @@ export default function Sidebar() {
     <div className="flex flex-col ">
       <Search placeholder="Search users" />
 
-      <ul>{searchUser && <Contacts contactUser={searchUser} />}</ul>
+      {/* <ul>
+        {" "}
+        <Contacts contactUser={contacts} />
+      </ul> */}
+
+      <ul>
+        {searchUser &&
+          searchUser.map((user) => {
+            return <Contacts contactUser={user} key={user.id} />;
+          })}
+      </ul>
     </div>
   );
 }

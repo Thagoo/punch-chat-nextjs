@@ -2,15 +2,29 @@
 
 import { searchUsers } from "@/lib/redux/features/searchUser/searchUserSlice";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function Search() {
   const dispatch = useDispatch();
+  const [showClear, setShowClear] = useState(false);
+
+  const inputRef = useRef();
 
   const handleSearch = useDebouncedCallback((term) => {
-    dispatch(searchUsers(term));
-  }, 2000);
+    setShowClear(true);
+    if (term.length > 2) {
+      dispatch(searchUsers(term));
+    }
+  }, 1000);
+
+  const handleClear = () => {
+    inputRef.current.value = "";
+    setShowClear(false);
+    dispatch(searchUsers(null));
+  };
 
   return (
     <div className="relative flex flex-1 flex-shrink-0">
@@ -22,8 +36,15 @@ export default function Search() {
         onChange={(e) => {
           handleSearch(e.target.value);
         }}
+        ref={inputRef}
         placeholder="Search"
       />
+      {showClear && (
+        <XMarkIcon
+          onClick={handleClear}
+          className="absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"
+        />
+      )}
 
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
     </div>

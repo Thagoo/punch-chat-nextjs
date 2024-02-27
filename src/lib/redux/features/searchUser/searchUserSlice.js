@@ -4,7 +4,7 @@ export const searchUsers = createAsyncThunk(
   "user/searchUsers",
   async (term) => {
     try {
-      const result = await fetch("/api/searchUser", {
+      const result = await fetch("/api/user/searchUser", {
         method: "POST",
         body: JSON.stringify({ term }),
       });
@@ -14,7 +14,6 @@ export const searchUsers = createAsyncThunk(
       return result.json();
     } catch (error) {
       throw new Error(error);
-      return error;
     }
   }
 );
@@ -22,7 +21,7 @@ export const searchUsers = createAsyncThunk(
 export const searchUserSlice = createSlice({
   name: "searchUser",
   initialState: {
-    searchUser: null,
+    searchUser: [],
   },
   reducers: {
     setSearchUser: (state, action) => {
