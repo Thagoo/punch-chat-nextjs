@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { websocketSlice } from "./features/websocket/websocketSlice";
+
+import webSocketMiddleware from "./features/websocket/socketMiddleware";
 import { searchUserSlice } from "./features/searchUser/searchUserSlice";
+import { chatSlice } from "./features/chatSlice/chatSlice";
 
 export const store = configureStore({
   reducer: {
-    websocket: websocketSlice.reducer,
     searchUser: searchUserSlice.reducer,
+    chat: chatSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(webSocketMiddleware),
 });
