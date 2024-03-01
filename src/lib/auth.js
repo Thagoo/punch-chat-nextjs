@@ -29,6 +29,7 @@ export const {
         token.firstName = user.firstName;
         token.lastName = user.lastName;
         token.email = user.email;
+        token.username = user.username;
         token.avatar = user.avatar;
         token.isAdmin = user.isAdmin;
       }
@@ -42,6 +43,7 @@ export const {
           session.user.firstName = token.firstName;
           session.user.lastName = token.lastName;
           session.user.email = token.email;
+          session.user.username = token.username;
           session.user.avatar = token.avatar;
           session.user.isAdmin = token.isAdmin;
         }
