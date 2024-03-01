@@ -1,5 +1,6 @@
 "use client";
 import { login } from "@/lib/action";
+import LoadingSpinner from "@/ui/loading-spinner";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -95,28 +96,13 @@ export default function LoginForm() {
 function Submit() {
   const status = useFormStatus();
 
-  const spinnerStyle = {
-    display: "inline",
-    animation: "spin 1s linear infinite",
-    fill: "#fff",
-    color: "rgb(229 231 235 / var(--tw-text-opacity))",
-  };
-
   return (
     <button
       className="focus:outline-none bg-slate-900 text-white font-bold tracking-wider block w-full p-2 rounded-lg disabled:bg-gray-600"
       disabled={status.pending}
     >
       {status.pending ? (
-        <div role="status">
-          <Image
-            src={"/assets/loading-spinner.svg"}
-            height={20}
-            width={20}
-            style={spinnerStyle}
-            alt="spinner"
-          />
-        </div>
+        <LoadingSpinner height={20} width={20} />
       ) : (
         <div>Submit</div>
       )}
