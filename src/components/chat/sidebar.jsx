@@ -17,10 +17,17 @@ export default function Sidebar() {
       </ul> */}
 
       <ul>
-        {searchUser &&
-          searchUser.map((user) => {
-            return <Contacts contactUser={user} key={user.id} />;
-          })}
+        {searchUser ? (
+          searchUser.length == 0 ? (
+            <div className="p-2">No results found</div>
+          ) : (
+            searchUser.map((user) => {
+              return <Contacts contactUser={user} key={user._id} />;
+            })
+          )
+        ) : (
+          <></>
+        )}
       </ul>
     </div>
   );

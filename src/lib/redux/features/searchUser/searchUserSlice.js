@@ -21,7 +21,7 @@ export const searchUsers = createAsyncThunk(
 export const searchUserSlice = createSlice({
   name: "searchUser",
   initialState: {
-    searchUser: [],
+    searchUser: null,
   },
   reducers: {
     setSearchUser: (state, action) => {

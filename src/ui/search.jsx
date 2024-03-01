@@ -1,6 +1,9 @@
 "use client";
 
-import { searchUsers } from "@/lib/redux/features/searchUser/searchUserSlice";
+import {
+  searchUsers,
+  setSearchUser,
+} from "@/lib/redux/features/searchUser/searchUserSlice";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRef, useState } from "react";
@@ -23,7 +26,7 @@ export default function Search() {
   const handleClear = () => {
     inputRef.current.value = "";
     setShowClear(false);
-    dispatch(searchUsers(null));
+    dispatch(setSearchUser(null));
   };
 
   return (
