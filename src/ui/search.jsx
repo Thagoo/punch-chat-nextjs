@@ -32,7 +32,7 @@ export default function Search() {
   return (
     <div className="relative flex flex-1 flex-shrink-0">
       <label htmlFor="search" className="sr-only">
-        Search
+        Search username
       </label>
       <input
         className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
@@ -40,7 +40,7 @@ export default function Search() {
           handleSearch(e.target.value);
         }}
         ref={inputRef}
-        placeholder="Search"
+        placeholder="Search Username"
       />
       {showClear && (
         <XMarkIcon
