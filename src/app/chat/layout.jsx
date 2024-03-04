@@ -1,49 +1,51 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  initializeWebSocket,
-  selectWebSocket,
-  handleMessage,
-} from "@/lib/redux/features/websocket/websocketSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/chat/sidebar";
 
-import ChatSkeleton from "@/ui/chat-skeleton";
+import { ChatSkeleton } from "@/ui/chat-skeleton";
+import { useSession } from "next-auth/react";
+import { UseDispatch } from "react-redux";
+import {
+  fetchConversations,
+  selectActiveStatus,
+} from "@/lib/redux/features/chatSlice/chatSlice";
 
 export default function layout({ children }) {
   const dispatch = useDispatch();
-  const socket = useSelector(selectWebSocket);
+  const activeStatus = useSelector(selectActiveStatus);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    if (!socket) {
-      const socket = new WebSocket("ws://localhost:8000/chat");
+    dispatch({
+      type: "WEBSOCKET_CONNECT",
+      payload: "ws://localhost:8000/chat",
+    });
+  }, []);
 
-      socket.addEventListener("open", () => {
-        dispatch(initializeWebSocket(socket));
-      });
+  // [TODO] session makes multiple calls so this useEffect spams, check if
+  // it does same on production
 
-      if (socket.readyState === WebSocket.OPEN) {
-        // Connection is already open
-        dispatch(handleMessage("check"));
-      } else {
-        socket.addEventListener("open", () => {
-          // dispatch(handleMessage("socket"));
-        });
-      }
-
-      socket.addEventListener("close", () => {});
-
-      return () => {
-        socket.close();
-      };
+  useEffect(() => {
+    dispatch({
+      type: "WEBSOCKET_SEND",
+      payload: {
+        type: "JOIN",
+        data: {
+          userId: session?.user.id,
+        },
+      },
+    });
+    if (session?.user.id) {
+      dispatch(fetchConversations(session?.user.id));
     }
-  }, [dispatch]);
+  }, [session]);
 
-  if (socket) {
+  if (activeStatus) {
     return (
       <div className="flex flex-grow h-[80%] ">
-        <div className="w-full md:w-[25%] border rounded p-1">
+        <div className="w-[30%] hidden md:block border rounded ">
           <Sidebar />
         </div>
         {children}
