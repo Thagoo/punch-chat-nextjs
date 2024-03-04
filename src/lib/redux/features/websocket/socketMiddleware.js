@@ -1,4 +1,4 @@
-import { addMessage } from "../chatSlice/chatSlice";
+import { addMessage, setStatus } from "../chatSlice/chatSlice";
 
 let socket = null;
 const webSocketMiddleware = (store) => (next) => (action) => {
@@ -8,7 +8,9 @@ const webSocketMiddleware = (store) => (next) => (action) => {
       socket.addEventListener("message", (event) => {
         try {
           const data = JSON.parse(event.data);
-
+          if (data.type == "STATUS") {
+            store.dispatch(setStatus(data.connected));
+          }
           store.dispatch(addMessage(data));
         } catch (error) {
           console.error("Error parsing message data:", error);
