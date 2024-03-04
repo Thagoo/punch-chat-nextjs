@@ -14,5 +14,48 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const conversationSchema = new mongoose.Schema(
+  {
+    participants: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    lastMessage: {
+      type: String,
+    },
+    lastMessageAt: {
+      type: Date,
+    },
+  },
+  { timestamps: true }
+);
+
+const messageSchema = new mongoose.Schema(
+  {
+    conversationId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
+    senderId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
 export const User =
   mongoose?.models?.User || mongoose.model("User", userSchema);
+export const Message =
+  mongoose?.models?.Message || mongoose.model("Message", messageSchema);
+export const Conversation =
+  mongoose?.models?.Conversation ||
+  mongoose.model("Conversation", conversationSchema);
