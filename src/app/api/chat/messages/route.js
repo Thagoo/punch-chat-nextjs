@@ -1,19 +1,25 @@
 import { Conversation, Message } from "@/lib/models";
 import { connectDb } from "@/lib/utils";
 
-export async function POST(req, { params }) {
-  const { conversationId } = params;
-
+export async function POST(req) {
+  const searchParams = req.nextUrl.searchParams;
+  const conversationId = searchParams.get("conversationId");
   const { senderId, recieverId, content } = await req.json();
-
+  console.log(conversationId, "post");
+  if (!senderId) {
+    return Response.json({ status: 400 });
+  }
   try {
     await connectDb();
+    let conversation;
 
-    let conversation = await Conversation.findById(conversationId);
-    if (!conversation) {
+    if (!conversationId) {
       conversation = new Conversation({ participants: [senderId, recieverId] });
       await conversation.save();
+    } else {
+      conversation = await Conversation.findById(conversationId);
     }
+
     const message = new Message({
       conversationId: conversation._id,
       senderId: senderId,
@@ -23,6 +29,10 @@ export async function POST(req, { params }) {
 
     conversation.lastMessage = content;
     await conversation.save();
+    if (!conversationId) {
+      return Response.json(conversation, { status: 200 });
+    }
+
     return Response.json({ status: 200 });
   } catch (error) {
     console.log(error);
@@ -30,14 +40,20 @@ export async function POST(req, { params }) {
   }
 }
 
-export async function GET(req, { params }) {
-  const { conversationId } = params;
+export async function GET(req) {
+  const searchParams = req.nextUrl.searchParams;
+  const conversationId = searchParams.get("conversationId");
 
+  if (!conversationId) {
+    return Response.json({ status: 400 });
+  }
   try {
     await connectDb();
 
     let messages = await Message.find({ conversationId });
-
+    if (!messages) {
+      return Response.json({ status: 404 });
+    }
     return Response.json(messages, { status: 200 });
   } catch (error) {
     console.log(error);
