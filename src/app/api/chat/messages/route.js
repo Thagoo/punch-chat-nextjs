@@ -5,19 +5,23 @@ export async function POST(req) {
   const searchParams = req.nextUrl.searchParams;
   const conversationId = searchParams.get("conversationId");
   const { senderId, recieverId, content } = await req.json();
-  console.log(conversationId, "post");
+
   if (!senderId) {
     return Response.json({ status: 400 });
   }
   try {
     await connectDb();
-    let conversation;
 
-    if (!conversationId) {
-      conversation = new Conversation({ participants: [senderId, recieverId] });
-      await conversation.save();
-    } else {
-      conversation = await Conversation.findById(conversationId);
+    let conversation = await Conversation.findOne({
+      participants: {
+        $all: [senderId, recieverId],
+      },
+    });
+
+    if (!conversation) {
+      conversation = new Conversation({
+        participants: [senderId, recieverId],
+      });
     }
 
     const message = new Message({
