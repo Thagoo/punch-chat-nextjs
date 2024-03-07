@@ -3,12 +3,25 @@ import { useSelector } from "react-redux";
 import { selectSearchUser } from "@/lib/redux/features/searchUser/searchUserSlice";
 
 import ContactItem from "@/ui/contact-item";
-import { selectConversations } from "@/lib/redux/features/chatSlice/chatSlice";
+import {
+  fetchConversations,
+  selectConversations,
+  selectMessages,
+} from "@/lib/redux/features/chatSlice/chatSlice";
 import { useEffect } from "react";
+
+import { useDispatch } from "react-redux";
 
 export default function Sidebar() {
   const searchUser = useSelector(selectSearchUser);
   const conversations = useSelector(selectConversations);
+  const messages = useSelector(selectMessages);
+  const dispatch = useDispatch();
+
+  console.log(conversations);
+  useEffect(() => {
+    dispatch(fetchConversations());
+  }, [messages]);
 
   return (
     <div className="flex flex-col ">
@@ -25,15 +38,21 @@ export default function Sidebar() {
           )
         ) : (
           <>
-            {conversations.map((conversation) => {
-              return (
-                <ContactItem
-                  conversation={conversation}
-                  targetUserDetails={conversation?.targetUserDetails}
-                  key={conversation.targetUserDetails?._id}
-                />
-              );
-            })}
+            {conversations ? (
+              conversations.map((conversation) => {
+                return (
+                  <ContactItem
+                    conversation={conversation}
+                    targetUserDetails={conversation?.targetUserDetails}
+                    key={conversation.targetUserDetails?._id}
+                  />
+                );
+              })
+            ) : (
+              <div className="mt-4 flex justify-center text-xl text-slate-700">
+                No conversations
+              </div>
+            )}
           </>
         )}
       </ul>

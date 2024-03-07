@@ -10,11 +10,15 @@ import { UseDispatch } from "react-redux";
 import {
   fetchConversations,
   selectActiveStatus,
+  selectCurrentUserId,
+  setCurrentUserId,
 } from "@/lib/redux/features/chatSlice/chatSlice";
 
 export default function layout({ children }) {
   const dispatch = useDispatch();
   const activeStatus = useSelector(selectActiveStatus);
+  const userId = useSelector(selectCurrentUserId);
+
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -38,9 +42,13 @@ export default function layout({ children }) {
       },
     });
     if (session?.user.id) {
-      dispatch(fetchConversations(session?.user.id));
+      dispatch(setCurrentUserId(session?.user.id));
     }
   }, [session]);
+
+  useEffect(() => {
+    dispatch(fetchConversations());
+  }, [userId]);
 
   if (activeStatus) {
     return (
